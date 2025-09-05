@@ -1,30 +1,23 @@
-.. _service-steam:
+.. _service-steam-satisfactory:
 
-Steam
-#####
-Steam dedicated servers with steamcmd and wine.
-
-.. toctree::
-  :hidden:
-  :maxdepth: -1
-
-  conan_exiles
-  left_4_dead
-  left_4_dead_2
-  satisfactory
-  seven_days_to_die
-  troubleshooting
+Satisfactory
+############
+`Satisfactory <https://www.satisfactorygame.com>`_ dedicated server on steam.
 
 .. role:: steam
-  :service_doc: https://developer.valvesoftware.com/wiki/SteamCMD
-  :blocking:    Require upstream repo update, wine dependency updates.
+  :service_doc: https://satisfactory.fandom.com/wiki/Dedicated_servers
   :private:
-  :update:      2022-10-10
+  :update:      2022-10-16
   :open:
 
-  Role handles configuration of all provided games servers. See each game for
-  game-specific documentation.
+  Satisfactory dedicated server.
+
+  * Role handles all steps that are provided in this documentation.
+
+Ports
+*****
+.. literalinclude:: ../defaults/main/satisfactory/ports.yml
 
 Defaults
 ********
-.. literalinclude:: ../defaults/main/main.yml
+.. literalinclude:: ../defaults/main/satisfactory/main.yml
