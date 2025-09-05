@@ -1,0 +1,166 @@
+---
+###############################################################################
+# Config
+###############################################################################
+# INI files contain duplicate keys (violating the INI standard). Files are
+# deleted and re-created with exclusive disabled to prevent infinite duplicate
+# key growth in configs.
+#
+# Reference:
+# * https://satisfactory.wiki.gg/wiki/Dedicated_servers#Linux
+# * https://satisfactory.wiki.gg/wiki/Dedicated_servers/Running_as_a_Service
+# * https://satisfactory.wiki.gg/wiki/Dedicated_servers/Configuration_files
+
+- name: 'Config | set Engine.ini'
+  when: satisfactory_cfg_engine | length > 0
+  ansible.builtin.include_role:
+    name: 'r_pufky.lib.utils'
+    tasks_from: 'atomic_ini.yml'
+  vars:
+    ini: '{{ satisfactory_cfg_engine }}'
+    path: '{{ _satisfactory.config ~ "/Engine.ini" }}'
+    no_extra_spaces: true
+    owner: '{{ _steam_srv_user.role_uid }}'
+    group: '{{ _steam_srv_group.role_gid }}'
+    mode: '0664'
+
+- name: 'Config | set GameUserSettings.ini'
+  when: satisfactory_cfg_game_user_settings | length > 0
+  ansible.builtin.include_role:
+    name: 'r_pufky.lib.utils'
+    tasks_from: 'atomic_ini.yml'
+  vars:
+    ini: '{{ satisfactory_cfg_game_user_settings }}'
+    path: '{{ _satisfactory.config ~ "/GameUserSettings.ini" }}'
+    no_extra_spaces: true
+    owner: '{{ _steam_srv_user.role_uid }}'
+    group: '{{ _steam_srv_group.role_gid }}'
+    mode: '0664'
+
+- name: 'Config | set Game.ini'
+  when: satisfactory_cfg_game | length > 0
+  ansible.builtin.include_role:
+    name: 'r_pufky.lib.utils'
+    tasks_from: 'atomic_ini.yml'
+  vars:
+    ini: '{{ satisfactory_cfg_game }}'
+    path: '{{ _satisfactory.config ~ "/Game.ini" }}'
+    no_extra_spaces: true
+    owner: '{{ _steam_srv_user.role_uid }}'
+    group: '{{ _steam_srv_group.role_gid }}'
+    mode: '0664'
+
+- name: 'Config | create service'
+  ansible.builtin.include_role:
+    name: 'r_pufky.deb.systemd'
+  vars:
+    systemd_daemon_reload_enable: true
+    systemd_services:
+      - name: 'satisfactory'
+        state: 'present'
+        drop_in: false
+        unit:
+          description: 'Satisfactory Dedicated Server'
+          wants:
+            - 'network-online.target'
+          after:
+            - 'syslog.target'
+            - 'network.target'
+            - 'nss-lookup.target'
+            - 'network-online.target'
+        service:
+          type: 'simple'
+          exec_start_pre:
+            - >-
+              /usr/games/steamcmd
+              +@sSteamCmdForcePlatformType {{ satisfactory_role_platform }}
+              +force_install_dir {{ satisfactory_srv_root }}
+              +login anonymous
+              +app_update {{ satisfactory_role_app_id }}
+              -beta {{ satisfactory_srv_version }}
+              {{ satisfactory_srv_extra_opts }}
+              +quit
+          exec_start:
+            - '{{ satisfactory_srv_root }}/FactoryServer.sh'
+          restart: 'always'
+          restart_sec: 60
+        kill:
+          kill_signal: 'SIGINT'
+        exec:
+          user: '{{ _satisfactory.user }}'
+          group: '{{ _satisfactory.group }}'
+          working_directory: '{{ satisfactory_srv_root }}'
+          environment:
+            - var: 'LD_LIBRARY_PATH'
+              value: '{{ satisfactory_srv_root }}/linux64'
+        install:
+          wanted_by:
+            - 'multi-user.target'
+
+- name: 'Config | create backup service'
+  when: satisfactory_srv_backup_enable
+  ansible.builtin.include_role:
+    name: 'r_pufky.deb.systemd'
+  vars:
+    systemd_daemon_reload_enable: true
+    systemd_services:
+      - name: 'satisfactory_backup'
+        state: 'present'
+        drop_in: false
+        unit:
+          description: 'Satisfactory backup.'
+          requires:
+            - 'satisfactory_backup.timer'
+        service:
+          type: 'oneshot'
+          exec_start:
+            - >-
+              /usr/bin/tar -cvJf
+              "{{ satisfactory_srv_backup_root }}/$(date --iso-8601).tar.xz"
+              "{{ _satisfactory.saves }}"
+          remain_after_exit: true
+        exec:
+          user: '{{ _satisfactory.user }}'
+          group: '{{ _satisfactory.group }}'
+          working_directory: '{{ satisfactory_srv_backup_root }}'
+    systemd_timers:
+      - name: 'satisfactory_backup'
+        state: 'present'
+        drop_in: false
+        unit:
+          description: 'Satisfactory backup timer.'
+        timer:
+          unit: 'satisfactory_backup.service'
+          on_boot_sec:
+            '{{ satisfactory_srv_backup_schedule | default("1d") }}'
+        install:
+          wanted_by:
+            - 'timers.target'
+
+- name: 'Config | disable backup service'
+  when: not satisfactory_srv_backup_enable
+  ansible.builtin.include_role:
+    name: 'r_pufky.deb.systemd'
+  vars:
+    systemd_daemon_reload_enable: true
+    systemd_services:
+      - name: 'satisfactory_backup'
+        drop_in: false
+        state: 'absent'
+    systemd_timers:
+      - name: 'satisfactory_backup'
+        drop_in: false
+        state: 'absent'
+
+- name: 'Config | flush handlers'
+  ansible.builtin.meta: 'flush_handlers'
+
+- name: 'Config | start services'
+  ansible.builtin.systemd:
+    name: 'Config | {{ item }}'
+    enabled: true
+    daemon_reload: true
+    state: 'started'
+  failed_when: false
+  loop:
+    - 'satisfactory.service'

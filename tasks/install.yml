@@ -1,0 +1,90 @@
+---
+###############################################################################
+# Install
+###############################################################################
+#
+# Generates:
+#   _satisfactory: dict - Role runtime specific config.
+#
+# Reference:
+# * https://satisfactory.wiki.gg/wiki/Dedicated_servers#SteamCMD
+
+- name: 'Install | steamcmd'
+  ansible.builtin.import_role:
+    name: 'r_pufky.game.steam'
+
+- name: 'Install | cache steam user'
+  ansible.builtin.set_fact:
+    _satisfactory:
+      user: '{{ _steam_srv_user.raw }}'
+      uid: '{{ _steam_srv_user.role_uid }}'
+      group: '{{ _steam_srv_group.raw }}'
+      gid: '{{ _steam_srv_group.role_gid }}'
+      home: '{{ _steam_srv_user.role_home }}'
+      config: '{{
+          satisfactory_srv_root ~ "/FactoryGame/Saved/Config/LinuxServer"
+        }}'
+      saves: '{{
+          _steam_srv_user.role_home ~
+          "/.config/Epic/FactoryGame/Saved/SaveGames"
+        }}'
+
+- name: 'Install | create {{ satisfactory_srv_root }}'
+  ansible.builtin.file:
+    path: '{{ satisfactory_srv_root }}'
+    owner: '{{ _satisfactory.uid }}'
+    group: '{{ _satisfactory.gid }}'
+    mode: '0755'
+    state: 'directory'
+
+- name: 'Install | create {{ _satisfactory.config }}'
+  ansible.builtin.file:
+    path: '{{ _satisfactory.config }}'
+    owner: '{{ _satisfactory.uid }}'
+    group: '{{ _satisfactory.gid }}'
+    mode: '0775'
+    state: 'directory'
+
+- name: 'Install | create backup directory'
+  when: satisfactory_srv_backup_enable
+  ansible.builtin.file:
+    path: '{{ satisfactory_srv_backup_root }}'
+    owner: '{{ _satisfactory.uid }}'
+    group: '{{ _satisfactory.gid }}'
+    mode: '0755'
+    state: 'directory'
+  become: true
+  become_user: '{{
+      _satisfactory.user
+      if satisfactory_srv_user_data_manage_enable else
+      "root"
+    }}'
+
+- name: 'Install | updating server 🗘'
+  when: satisfactory_srv_update_server
+  ansible.builtin.debug:
+    msg: |
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │      Server is being updated. This will take a few minutes.       │
+      │                                                                   │
+      ├───────────────────────────────────────────────────────────────────╯
+      │ ~10GB to synchronize.
+
+- name: 'Install | update server {{ satisfactory_role_app_id }}'
+  when: satisfactory_srv_update_server
+  ansible.builtin.shell: >-
+    /usr/games/steamcmd
+    +@sSteamCmdForcePlatformType {{ satisfactory_role_platform }}
+    +force_install_dir {{ satisfactory_srv_root }}
+    +login anonymous
+    +app_update {{ satisfactory_role_app_id }}
+    -beta {{ satisfactory_srv_version }}
+    {{ satisfactory_srv_extra_opts }}
+    +quit
+  args:
+    executable: '/bin/bash'
+    chdir: '{{ _satisfactory.home }}'
+  changed_when: false
+  become: true
+  become_user: '{{ _satisfactory.user }}'

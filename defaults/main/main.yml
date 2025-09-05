@@ -1,30 +1,81 @@
 ---
 ###############################################################################
-# Steam Role Configuration (~2GB)
+# Satisfactory
 ###############################################################################
-# Install steamcmd with additional dependencies for running windows servers.
-# Preconfigure server settings may be deployed by enabling specific games or
-# manually installed after the role is applied.
+#       Minimum   Recommended
+# CPU:  4c/4t     4c/8t@3.8Ghz+
+# RAM:  12GB      16GB+ (4+ players)
+# Disk: 10GB      15GB
 #
-# Preconfigured servers will install all files and services required to run a
-# game.
+# Heavily favors single core speed. Do not use 'kvm64' VM processor types.
+#
+# Reference:
+# * https://satisfactory.wiki.gg/wiki/Dedicated_servers
 
-# User that steam will run under. Assumes externally managed.
-steam_user:  'steam'
-steam_group: 'steam'
+# Root install location. Default: '/home/steam/satisfactory'.
+satisfactory_srv_root: '/home/steam/satisfactory'
 
-# Create 'steam' user if not detected? See: vars/main.yml.
-steam_create_user: false
+# Additional steamcmd options to use during app_update.
+#
+# Such as validation (validate).
+#
+# Default: ''.
+#
+# Reference:
+# * https://developer.valvesoftware.com/wiki/SteamCMD
+satisfactory_srv_extra_opts: ''
 
-# Install wine if enabled. May be automatically enabled if a preconfigured
-# game is enabled. Default: true.
-steam_wine_enable: false
+# Update Satisfactory server? Default: True.
+satisfactory_srv_update_server: true
 
-# Wine release to install (stable, devel, staging). Default: 'stable'.
-steam_wine_release: 'stable'
+# Satisfactory release.
+#
+# Values:
+#         public: Stable branch (default).
+#   experimental: Experimental branch.
+#
+# Default: 'public'.
+satisfactory_srv_version: 'public'
 
-# Enable CAP_NET_RAW to allow applications that need to send and receive raw IP
-# packets to do so. This is disabled by default because it carries a potential
-# security risk, and the vast majority of applications do not need that
-# capability; though some wine applications/games my need it. Default: false.
-steam_wine_raw_network_enable: false
+# Validation delay (seconds).
+#
+# Specific machines may be slower to start dedicated server, resulting in
+# validation checks failing. This introduces a small delay to allow service
+# time to report running. 0 Disables.
+#
+# Default: 2 (seconds).
+satisfactory_srv_validate_delay: 2
+
+###############################################################################
+# Backup
+###############################################################################
+
+# Root backup location. Default: '/srv/backup/satisfactory'.
+satisfactory_srv_backup_root: '/srv/backup/satisfactory'
+
+# Enable user management of media files?
+#
+# Use steam_srv_user (inferred from r_pufky.game.steam results) to execute
+# media management commands. Role applies media permissions using 'root' by
+# default. For mounted data locations (NFS with squashed mounts, mapped
+# container mounts, etc) the local root user will not have sufficient
+# privileges to modify these files.
+#
+# Applies to:
+# * satisfactory_srv_backup_root
+#
+# Default: False.
+satisfactory_srv_user_data_manage_enable: false
+
+# Enable server backups?
+#
+# Satisfactory does not automatically create saves unless manually enabled.
+#
+# Default: False.
+#
+# Reference:
+# * https://satisfactory.wiki.gg/wiki/Dedicated_servers#Configuration
+satisfactory_srv_backup_enable: false
+
+# Backup schedule (systemd TIME format). Default: '1d' (daily).
+satisfactory_srv_backup_schedule: '1d'

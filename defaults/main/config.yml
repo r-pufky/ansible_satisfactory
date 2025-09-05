@@ -1,0 +1,168 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# Server Config
+###############################################################################
+# A new server must be claimed to be used. Once claimed a game may be created
+# on the server to host. These settings are stored in a binary save (.sav) file
+# and not externally editable.
+#
+# Claim a server:
+#
+#   Client Game → Server Manager → Add server
+#   * Set server name.
+#   * Set admin password.
+#   * Create or load a game to host.
+#
+# Reference:
+# * https://satisfactory.wiki.gg/wiki/Dedicated_servers#Claiming_the_Server_and_Starting_a_Game
+
+# Advanced UE4 game engine settings.
+#
+# Only defined values are enforced in configuration file. Changes via in-game
+# server management should be saved (and server stopped) to get updated values.
+#
+# Special Case:
+#   []: Empty list disable management of specified file.
+#
+# config_section:
+#     list of dict - UE4 INI configuration file definition.
+#   - section: str - Section name.
+#     option: str - Option key.
+#     value: any - Option value.
+#     state: str - Option state.
+#         Values:
+#           present: Add/update option.
+#            absent: Remove option.
+#         Default: 'present'.
+#     comment: str - Setting comment. Optional.
+#
+# Reference:
+# * https://satisfactory.wiki.gg/wiki/Dedicated_servers/Configuration_files
+
+# Engine.ini default settings.
+satisfactory_cfg_engine:
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '%GAMEDIR%Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/2D/Paper2D/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Animation/ACLPlugin/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Animation/AnimationWarping/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Animation/ControlRigSpline/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Animation/ControlRig/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Animation/DeformerGraph/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Animation/IKRig/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Bridge/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Compositing/LensDistortion/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Developer/AnimationSharing/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Editor/BlueprintHeaderView/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Editor/GeometryMode/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Editor/ObjectMixer/LightMixer/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Editor/ObjectMixer/ObjectMixer/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Editor/SpeedTreeImporter/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Editor/UVEditor/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Enterprise/DatasmithContent/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Enterprise/GLTFExporter/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Experimental/ChaosCaching/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Experimental/ChaosClothEditor/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Experimental/ChaosNiagara/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Experimental/ChaosSolverPlugin/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Experimental/ChaosVehiclesPlugin/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Experimental/ControlFlows/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Experimental/Dataflow/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Experimental/FullBodyIK/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Experimental/GeometryCollectionPlugin/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Experimental/GeometryScripting/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Experimental/Landmass/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Experimental/PythonScriptPlugin/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Experimental/ToolPresets/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/FX/Niagara/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Fab/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Interchange/Runtime/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Media/MediaCompositing/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Media/MediaPlate/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/MovieScene/SequencerScripting/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Runtime/AudioSynesthesia/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Runtime/AudioWidgets/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Runtime/GeometryProcessing/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Runtime/HairStrands/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Runtime/MeshModelingToolset/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Runtime/Metasound/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Runtime/ResonanceAudio/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Runtime/RigVM/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Runtime/Synthesis/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Runtime/WaveTable/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Tests/EditorTests/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Tests/RuntimeTests/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/TraceUtilities/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/VirtualProduction/Takes/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/WwiseNiagara/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../Engine/Plugins/Wwise/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../FactoryGame/Plugins/AbstractInstance/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../FactoryGame/Plugins/EditorTools/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../FactoryGame/Plugins/GameplayEvents/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../FactoryGame/Plugins/InstancedSplines/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../FactoryGame/Plugins/Online/OnlineIntegration/Content'}
+  - {section: 'Core.System', option: 'Paths', value: '../../../FactoryGame/Plugins/SignificanceISPC/Content'}
+  - {section: 'Internationalization', option: 'Culture', value: 'en_US'}
+  - {section: '/Script/Engine.Player', option: 'ConfiguredInternetSpeed', value: 120000}
+  - {section: '/Script/Engine.Player', option: 'ConfiguredLanSpeed', value: 130000}
+  - {section: '/Script/OnlineSubsystemUtils.IpNetDriver', option: 'MaxClientRate', value: 120000}
+  - {section: '/Script/OnlineSubsystemUtils.IpNetDriver', option: 'MaxInternetClientRate', value: 120000}
+  - {section: '/Script/SteamSockets.SteamSocketsNetDriver', option: 'MaxClientRate', value: 120000}
+  - {section: '/Script/SteamSockets.SteamSocketsNetDriver', option: 'MaxInternetClientRate', value: 120000}
+  - {section: '/Script/SocketSubsystemEOS.NetDriverEOSBase', option: 'MaxClientRate', value: 120000}
+  - {section: '/Script/SocketSubsystemEOS.NetDriverEOSBase', option: 'MaxInternetClientRate', value: 120000}
+  - {section: 'CrashReportClient', option: 'bImplicitSend', value: false}
+
+# GameUserSettings.ini default settings.
+satisfactory_cfg_game_user_settings:
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'mIntValues', value: '()'}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'mFloatValues', value: '()'}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'CurrentFGGameUserSettingsVersion', value: 0}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'mDismissedFirstLaunchPopupScreen', value: false}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'mbCrossPlayEnabled', value: true}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'bUseVSync', value: false}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'bUseDynamicResolution', value: false}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'ResolutionSizeX', value: 1280}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'ResolutionSizeY', value: 720}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'LastUserConfirmedResolutionSizeX', value: 1280}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'LastUserConfirmedResolutionSizeY', value: 720}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'WindowPosX', value: -1}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'WindowPosY', value: -1}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'FullscreenMode', value: 1}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'LastConfirmedFullscreenMode', value: 1}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'PreferredFullscreenMode', value: 1}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'Version', value: 5}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'AudioQualityLevel', value: 0}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'LastConfirmedAudioQualityLevel', value: 0}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'FrameRateLimit', value: 0.0}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'DesiredScreenWidth', value: 1280}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'DesiredScreenHeight', value: 720}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'LastUserConfirmedDesiredScreenWidth', value: 1280}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'LastUserConfirmedDesiredScreenHeight', value: 720}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'LastRecommendedScreenWidth', value: -1.0}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'LastRecommendedScreenHeight', value: -1.0}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'LastCPUBenchmarkResult', value: -1.0}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'LastGPUBenchmarkResult', value: -1.0}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'LastGPUBenchmarkMultiplier', value: 1.0}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'bUseHDRDisplayOutput', value: false}
+  - {section: '/Script/FactoryGame.FGGameUserSettings', option: 'HDRDisplayOutputNits', value: 1000}
+  - {section: 'ScalabilityGroups', option: 'sg.ResolutionQuality', value: 0}
+  - {section: 'ScalabilityGroups', option: 'sg.ViewDistanceQuality', value: 3}
+  - {section: 'ScalabilityGroups', option: 'sg.AntiAliasingQuality', value: 3}
+  - {section: 'ScalabilityGroups', option: 'sg.ShadowQuality', value: 3}
+  - {section: 'ScalabilityGroups', option: 'sg.GlobalIlluminationQuality', value: 1}
+  - {section: 'ScalabilityGroups', option: 'sg.ReflectionQuality', value: 3}
+  - {section: 'ScalabilityGroups', option: 'sg.PostProcessQuality', value: 3}
+  - {section: 'ScalabilityGroups', option: 'sg.TextureQuality', value: 3}
+  - {section: 'ScalabilityGroups', option: 'sg.EffectsQuality', value: 3}
+  - {section: 'ScalabilityGroups', option: 'sg.FoliageQuality', value: 3}
+  - {section: 'ScalabilityGroups', option: 'sg.ShadingQuality', value: 3}
+  - {section: '/Script/Engine.GameUserSettings', option: 'bUseDesiredScreenHeight', value: false}
+
+# Game.ini default settings.
+satisfactory_cfg_game:
+  - {section: '/Script/Engine.GameNetworkManager', option: 'TotalNetBandwidth', value: 500000}
+  - {section: '/Script/Engine.GameNetworkManager', option: 'MaxDynamicBandwidth', value: 120000}
+  - {section: '/Script/Engine.GameNetworkManager', option: 'MinDynamicBandwidth', value: 100000}
+  - {section: '/Script/Engine.GameSession', option: 'MaxPlayers', value: 4}

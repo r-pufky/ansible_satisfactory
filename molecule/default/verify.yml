@@ -1,0 +1,65 @@
+---
+- name: 'Verify'
+  hosts: 'all'
+  gather_facts: false
+  tasks:
+    - name: 'Verify | /home/steam/satisfactory'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'file.yml'
+      vars:
+        test_name: 'Verify | /home/steam/satisfactory'
+        test_file: '/home/steam/satisfactory'
+        test_owner: 'steam'
+        test_group: 'steam'
+        test_mode: '0755'
+        test_state: 'directory'
+        test_diff: true
+
+    - name: 'Verify | Engine.ini'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'copy.yml'
+      vars:
+        test_name: 'Verify | Engine.ini'
+        test_src: 'files/Engine.ini'
+        test_file: '{{
+            "/home/steam/satisfactory/FactoryGame/Saved/Config/LinuxServer/" ~
+            "Engine.ini"
+          }}'
+        test_owner: 'steam'
+        test_group: 'steam'
+        test_mode: '0664'
+        test_diff: true
+
+    - name: 'Verify | Game.ini'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'copy.yml'
+      vars:
+        test_name: 'Verify | Game.ini'
+        test_src: 'files/Game.ini'
+        test_file: '{{
+            "/home/steam/satisfactory/FactoryGame/Saved/Config/LinuxServer/" ~
+            "Game.ini"
+          }}'
+        test_owner: 'steam'
+        test_group: 'steam'
+        test_mode: '0664'
+        test_diff: true
+
+    - name: 'Verify | GameUserSettings.ini'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'copy.yml'
+      vars:
+        test_name: 'Verify | GameUserSettings.ini'
+        test_src: 'files/GameUserSettings.ini'
+        test_file: '{{
+            "/home/steam/satisfactory/FactoryGame/Saved/Config/LinuxServer/" ~
+            "GameUserSettings.ini"
+          }}'
+        test_owner: 'steam'
+        test_group: 'steam'
+        test_mode: '0664'
+        test_diff: true

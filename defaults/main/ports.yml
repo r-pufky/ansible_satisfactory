@@ -1,0 +1,27 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# Ports Configuration
+###############################################################################
+# Manage firewall with r_pufky.deb.ufw.
+#
+# Reference:
+# * https://satisfactory.wiki.gg/wiki/Dedicated_servers#Port_Forwarding_and_Firewall_Settings
+# yamllint enable rule:line-length
+
+satisfactory_srv_ports:
+  - proto: 'tcp'
+    from_ip: 'any'
+    to_port: '7777'
+    direction: 'in'
+    comment: 'satisfactory server traffic; HTTPS API'
+  - proto: 'udp'
+    from_ip: 'any'
+    to_port: '7777'
+    direction: 'in'
+    comment: 'satisfactory game traffic; lightweight query API'
+  - proto: 'tcp'
+    from_ip: 'any'
+    to_port: '8888'
+    direction: 'in'
+    comment: 'satisfactory game traffic; reliable messaging'
