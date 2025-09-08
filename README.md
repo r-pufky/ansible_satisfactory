@@ -4,6 +4,14 @@ Satisfactory dedicated server.
 ## Requirements
 [supported platforms](https://github.com/r-pufky/ansible_satisfactory/blob/main/meta/main.yml)
 
+Resource | Minimum | Recommended
+---------|---------|-------------------
+CPU      | 4c/4t   | 4c/8t@3.8Ghz+
+RAM      | 12GB    | 16GB+ (4+ players)
+Disk     | 10GB    | 15GB
+
+Heavily favors single core speed. Do not use **kvm64** VM processor types.
+
 ## Role Variables
 [defaults](https://github.com/r-pufky/ansible_satisfactory/tree/main/defaults/main)
 
