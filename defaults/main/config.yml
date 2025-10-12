@@ -9,7 +9,7 @@
 #
 # Claim a server:
 #
-#   Client Game → Server Manager → Add server
+#   Client Game ➔ Server Manager ➔ Add server
 #   * Set server name.
 #   * Set admin password.
 #   * Create or load a game to host.
