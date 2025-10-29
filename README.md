@@ -41,7 +41,8 @@ be created using the steamcmd user from `r_pufky.game.steam`.
 
 Changes updating the configuration only can be done to speed role application:
 ``` bash
-ansible-playbook site.yml --tags 7days -e 'satisfactory_srv_update_server=false'
+ansible-playbook site.yml --tags 7days \
+  -e '{"satisfactory_srv_update_server": false}'
 ```
 
 ## Development
