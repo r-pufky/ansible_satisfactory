@@ -1,13 +1,44 @@
 ---
 ###############################################################################
-# Prep
+# Pre Execution Tasks
 ###############################################################################
-# Service may not exist if first install. Ensure server directory is created.
+# Only use data annotations in role after merging role, defaults, runtime data.
+# Service may not exist if first install.
 
-- name: 'Prep | stop services'
+- name: 'Prep | fact | record start time'
+  ansible.builtin.set_fact:
+    satisfactory__srv: "{{ satisfactory___release | r_pufky.data.v3(
+
+        _start=now(utc=True, fmt='%Y-%m-%dT%H%M%S'),
+
+        _update_opts=satisfactory_srv_update_opts | join(' '),
+        _launch_opts=satisfactory_srv_launch_opts | join(' '),
+        _branch=satisfactory_srv_branch,
+      ) }}"
+    satisfactory__cfg: "{{ satisfactory___app | r_pufky.data.v3(
+
+        _cfg_dir=satisfactory_cfg_dir | regex_replace('\\/$', ''),
+        _backup_dir=satisfactory_cfg_backup_dir | regex_replace('\\/$', ''),
+        _backup_schedule=satisfactory_cfg_backup_schedule,
+      ) }}"
+
+- name: 'Prep | assert | config enabled and source defined'
+  when: satisfactory_flg_config
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - satisfactory__cfg._cfg_dir | length > 0
+    fail_msg: |
+
+      ✘ Config source not set.
+
+      Config source enabled but no config source defined.
+
+      satisfactory_flg_config: {{ satisfactory_flg_config }}
+      satisfactory_cfg_dir: {{ satisfactory__cfg._cfg_dir }}
+
+- name: 'Prep | systemd | stop satisfactory.service'
   ansible.builtin.systemd:
-    name: '{{ item }}'
+    name: 'satisfactory.service'
     state: 'stopped'
   failed_when: false
-  loop:
-    - 'satisfactory.service'

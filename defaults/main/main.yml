@@ -2,80 +2,95 @@
 ###############################################################################
 # Satisfactory
 ###############################################################################
-#       Minimum   Recommended
-# CPU:  4c/4t     4c/8t@3.8Ghz+
-# RAM:  12GB      16GB+ (4+ players)
-# Disk: 10GB      15GB
+
+# 1. Force Satisfactory server updates if already installed?
 #
-# Heavily favors single core speed. Do not use 'kvm64' VM processor types.
+# Server will be updated during role application and as a pre-start task for
+# service start. Disable to prevent updates after initial installation.
+#
+# Default: False.
+satisfactory_flg_update: false
+
+# 2. Set configuration files? Default: False.
+satisfactory_flg_config: false
+
+# 3. Enable scheduled server backup?
+#
+# Satisfactory does not automatically create saves unless manually enabled. See
+# satisfactory_cfg_backup_*.
+#
+# Default: False
 #
 # Reference:
-# * https://satisfactory.wiki.gg/wiki/Dedicated_servers
+# * https://satisfactory.wiki.gg/wiki/Dedicated_servers#Configuration
+satisfactory_flg_backup: false
 
-# Root install location. Default: '/home/steam/satisfactory'.
-satisfactory_srv_root: '/home/steam/satisfactory'
+###############################################################################
+# Service
+###############################################################################
 
 # Additional steamcmd options to use during app_update.
 #
-# Such as validation (validate).
+# Use 'validate' to checksum installed files for corruption.
 #
-# Default: ''.
+# Default: [].
+satisfactory_srv_update_opts: []
+
+# Server launch options.
+#
+# Command line options passed to dedicated server. Use only options that must
+# be set for service to start. Place all other options in configuration files.
+#
+# Default: [].
 #
 # Reference:
-# * https://developer.valvesoftware.com/wiki/SteamCMD
-satisfactory_srv_extra_opts: ''
+# * https://satisfactory.wiki.gg/wiki/Dedicated_servers#Command_line_options
+satisfactory_srv_launch_opts: []
 
-# Update Satisfactory server? Default: True.
-satisfactory_srv_update_server: true
-
-# Satisfactory release.
+# Satisfactory branch.
 #
 # Values:
 #         public: Stable branch (default).
 #   experimental: Experimental branch.
 #
 # Default: 'public'.
-satisfactory_srv_version: 'public'
-
-# Validation delay (seconds).
-#
-# Specific machines may be slower to start dedicated server, resulting in
-# validation checks failing. This introduces a small delay to allow service
-# time to report running. 0 Disables.
-#
-# Default: 2 (seconds).
-satisfactory_srv_validate_delay: 2
+satisfactory_srv_branch: 'public'
 
 ###############################################################################
+# Config
+###############################################################################
+
+# Satisfactory server configuration to set.
+#
+# Ansible controller path to source configuration files (treated as a jinja2
+# template allowing for ansible variable interpretation). Overwrites existing
+# /home/steam/satisfactory/FactoryGame/Saved/Config/LinuxServer/* files.
+#
+# Files not specified will be removed and automatically regenerated to defaults
+# on first run server startup and shutdown.
+#
+# Role contains two example configurations:
+# * files/default - Vanilla auto-generated server settings.
+# * files/4_player - Minimal changes for a 4 player server.
+#
+# satisfactory_cfg_dir: 'host_vars/sat.example.com/data/config'
+#
+# Default: '' (use auto-generated defaults on startup).
+#
+# Reference:
+# * https://satisfactory.wiki.gg/wiki/Dedicated_servers/Configuration_files
+satisfactory_cfg_dir: ''
+
 # Backup
 ###############################################################################
 
 # Root backup location. Default: '/srv/backup/satisfactory'.
-satisfactory_srv_backup_root: '/srv/backup/satisfactory'
+satisfactory_cfg_backup_dir: '/srv/backup/satisfactory'
 
-# Enable user management of media files?
+# Backup schedule (systemd TIME format).
 #
-# Use steam_srv_user (inferred from r_pufky.game.steam results) to execute
-# media management commands. Role applies media permissions using 'root' by
-# default. For mounted data locations (NFS with squashed mounts, mapped
-# container mounts, etc) the local root user will not have sufficient
-# privileges to modify these files.
-#
-# Applies to:
-# * satisfactory_srv_backup_root
-#
-# Default: False.
-satisfactory_srv_user_data_manage_enable: false
-
-# Enable server backups?
-#
-# Satisfactory does not automatically create saves unless manually enabled.
-#
-# Default: False.
+# Default: '1d' (daily).
 #
 # Reference:
-# * https://satisfactory.wiki.gg/wiki/Dedicated_servers#Configuration
-satisfactory_srv_backup_enable: false
-
-# Backup schedule (systemd TIME format). Default: '1d' (daily).
-satisfactory_srv_backup_schedule: '1d'
+# * https://www.freedesktop.org/software/systemd/man/latest/systemd.time.html
+satisfactory_cfg_backup_schedule: '1d'

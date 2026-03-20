@@ -2,9 +2,11 @@
 ###############################################################################
 # Install
 ###############################################################################
-#
-# Generates:
-#   _satisfactory: dict - Role runtime specific config.
+# Find current install and branch, and update save location mapping based on
+# steam user home directory. Updates will occur if:
+# * Not installed.
+# * Wrong branch.
+# * Force updates flagged.
 #
 # Reference:
 # * https://satisfactory.wiki.gg/wiki/Dedicated_servers#SteamCMD
@@ -12,79 +14,71 @@
 - name: 'Install | steamcmd'
   ansible.builtin.import_role:
     name: 'r_pufky.game.steam'
+  vars:
+    steam_flg_update: false
 
-- name: 'Install | cache steam user'
-  ansible.builtin.set_fact:
-    _satisfactory:
-      user: '{{ _steam_srv_user.raw }}'
-      uid: '{{ _steam_srv_user.role_uid }}'
-      group: '{{ _steam_srv_group.raw }}'
-      gid: '{{ _steam_srv_group.role_gid }}'
-      home: '{{ _steam_srv_user.role_home }}'
-      config: '{{
-          satisfactory_srv_root ~ "/FactoryGame/Saved/Config/LinuxServer"
-        }}'
-      saves: '{{
-          _steam_srv_user.role_home ~
-          "/.config/Epic/FactoryGame/Saved/SaveGames"
-        }}'
+- name: 'Install | filesystem | find current installation'
+  ansible.builtin.stat:
+    path: '{{ satisfactory__cfg._app }}'
+  register: satisfactory__installed
 
-- name: 'Install | create {{ satisfactory_srv_root }}'
-  ansible.builtin.file:
-    path: '{{ satisfactory_srv_root }}'
-    owner: '{{ _satisfactory.uid }}'
-    group: '{{ _satisfactory.gid }}'
-    mode: '0755'
-    state: 'directory'
-
-- name: 'Install | create {{ _satisfactory.config }}'
-  ansible.builtin.file:
-    path: '{{ _satisfactory.config }}'
-    owner: '{{ _satisfactory.uid }}'
-    group: '{{ _satisfactory.gid }}'
-    mode: '0775'
-    state: 'directory'
-
-- name: 'Install | create backup directory'
-  when: satisfactory_srv_backup_enable
-  ansible.builtin.file:
-    path: '{{ satisfactory_srv_backup_root }}'
-    owner: '{{ _satisfactory.uid }}'
-    group: '{{ _satisfactory.gid }}'
-    mode: '0755'
-    state: 'directory'
-  become: true
-  become_user: '{{
-      _satisfactory.user
-      if satisfactory_srv_user_data_manage_enable else
-      "root"
-    }}'
-
-- name: 'Install | updating server 🗘'
-  when: satisfactory_srv_update_server
-  ansible.builtin.debug:
-    msg: |
-      ╭───────────────────────────────────────────────────────────────────╮
-      │                                                                   │
-      │      Server is being updated. This will take a few minutes.       │
-      │                                                                   │
-      ├───────────────────────────────────────────────────────────────────╯
-      │ ~10GB to synchronize.
-
-- name: 'Install | update server {{ satisfactory_role_app_id }}'
-  when: satisfactory_srv_update_server
-  ansible.builtin.shell: >-
-    /usr/games/steamcmd
-    +@sSteamCmdForcePlatformType {{ satisfactory_role_platform }}
-    +force_install_dir {{ satisfactory_srv_root }}
-    +login anonymous
-    +app_update {{ satisfactory_role_app_id }}
-    -beta {{ satisfactory_srv_version }}
-    {{ satisfactory_srv_extra_opts }}
-    +quit
-  args:
-    executable: '/bin/bash'
-    chdir: '{{ _satisfactory.home }}'
+- name: 'Install | filesystem | query installed branch'
+  when: satisfactory__installed.stat.exists
+  ansible.builtin.find:
+    paths: '{{ satisfactory__cfg._manifest_file | dirname }}'
+    patterns: '{{ satisfactory__cfg._manifest_file | basename }}'
+    file_type: 'file'
+    read_whole_file: true
+    contains: '(?m:UserConfig"\s*{\s*"BetaKey"\s*"public)'
+    recurse: false
+  register: satisfactory__installed_branch
   changed_when: false
-  become: true
-  become_user: '{{ _satisfactory.user }}'
+
+# Default to 'public' if not branch found.
+- name: 'Install | fact | set install state'
+  ansible.builtin.set_fact:
+    satisfactory__cfg: "{{ satisfactory__cfg | r_pufky.data.v3(
+
+        _is_installed=satisfactory__installed.stat.exists,
+        _installed_branch=(
+            'public'
+            if satisfactory__installed_branch.matched | default(1) > 0 else
+            'experimental'
+        ),
+        _save_dir=(
+          steam__ctx._home ~ '/.config/Epic/FactoryGame/Saved/SaveGames'
+        ),
+      ) }}"
+
+- name: '{{ "Install | filesystem | " ~ satisfactory__cfg._root_dir }}'
+  ansible.builtin.file:
+    path: '{{ satisfactory__cfg._root_dir }}'
+    owner: '{{ steam__ctx._uid }}'
+    group: '{{ steam__ctx._gid }}'
+    mode: '0755'
+    state: 'directory'
+
+- name: '{{ "Install | filesystem | " ~ satisfactory__cfg._backup_dir }}'
+  when: satisfactory_flg_backup
+  ansible.builtin.file:
+    path: '{{ satisfactory__cfg._backup_dir }}'
+    owner: '{{ steam__ctx._uid }}'
+    group: '{{ steam__ctx._gid }}'
+    mode: '0755'
+    state: 'directory'
+
+- name: '{{ "Install | filesystem | " ~ satisfactory__cfg._ini_dir }}'
+  ansible.builtin.file:
+    path: '{{ satisfactory__cfg._ini_dir }}'
+    owner: '{{ steam__ctx._uid }}'
+    group: '{{ steam__ctx._gid }}'
+    mode: '0775'  # Game enforced.
+    state: 'directory'
+
+- name: 'Install | systemd | set satisfactory.service'
+  ansible.builtin.template:
+    src: 'systemd/satisfactory.service.j2'
+    dest: '/etc/systemd/system/satisfactory.service'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'

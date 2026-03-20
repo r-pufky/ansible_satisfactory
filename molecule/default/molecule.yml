@@ -10,48 +10,49 @@
 dependency:
   name: 'galaxy'
 driver:
-  name: 'podman'
+  name: 'vagrant'
+  provider:
+    name: 'libvirt'
+    type: 'libvirt'
 provisioner:
   name: 'ansible'
+  connection_options:
+    ansible_ssh_user: 'vagrant'
+    ansible_become: true
   config_options:
     defaults:
       interpreter_python: 'auto_silent'
       callback_whitelist: 'profile_tasks, timer, yaml'
-    ssh_connection:
-      pipelining: false
   inventory:
-    host_vars:
-      satisfactory-debian-13-default:
-        satisfactory_srv_backup_enable: true
+    group_vars:
+      all:
+        url_inject_enable: true
+        satisfactory_flg_backup: true
+        satisfactory_flg_config: true
+        satisfactory_cfg_dir: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~ "/files/4_player"
+          }}'
 platforms:
-  - name: 'satisfactory-debian-13-default'
-    image: 'ghcr.io/hifis-net/debian-systemd:13'
-    systemd: 'always'
-    volumes:
-      - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
-    command: '/lib/systemd/systemd'
-    pre_build_image: true
-    published_ports:
-      - '7777:7777/tcp'
-      - '7777:7777/udp'
-      - '8888:8888/tcp'
+  - name: 'satisfactory-default'
+    box: 'debian/trixie64'
+    memory: 4096
+    cpus: 2
+    interfaces:
+      - network_name: 'private_network'
+        auto_config: true
+        type: 'dhcp'
+    instance_raw_config_args:
+      - 'vm.network "forwarded_port", guest: 7777, host: 7777, protocol: "udp"'
+      - 'vm.network "forwarded_port", guest: 7777, host: 7777, protocol: "tcp"'
+      - 'vm.network "forwarded_port", guest: 8888, host: 8888, protocol: "tcp"'
 verifier:
   name: 'ansible'
-lint: |
-  set -e
-  yamllint .
-  ansible-lint .
 scenario:
   test_sequence:
-    # - 'dependency'
-    # - 'cleanup'
     - 'destroy'
     - 'syntax'
     - 'create'
-    # - 'prepare'
+    - 'prepare'
     - 'converge'
-    # - 'idempotence'  # services always restarted.
-    # - 'side_effect'
     - 'verify'
-    # - 'cleanup'
     - 'destroy'

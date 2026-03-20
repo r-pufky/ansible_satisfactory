@@ -9,7 +9,7 @@
 # * https://satisfactory.wiki.gg/wiki/Dedicated_servers#Port_Forwarding_and_Firewall_Settings
 # yamllint enable rule:line-length
 
-satisfactory_srv_ports:
+satisfactory_ports:
   - proto: 'tcp'
     from_ip: 'any'
     to_port: '7777'

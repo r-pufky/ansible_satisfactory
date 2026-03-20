@@ -1,0 +1,31 @@
+---
+###############################################################################
+# Handlers
+###############################################################################
+
+- name: 'Handlers | load satisfactory_backup'
+  listen:
+    - 'Handlers | enable satisfactory_backup'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: true
+    daemon_reload: true
+  loop:
+    - 'satisfactory_backup.service'
+    - 'satisfactory_backup.timer'
+
+- name: 'Handlers | satisfactory_backup.timer (tick)'
+  listen:
+    - 'Handlers | enable satisfactory_backup'
+  ansible.builtin.systemd:
+    name: 'satisfactory_backup.timer'
+    state: 'started'
+
+- name: 'Handlers | disable satisfactory_backup'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: false
+    state: 'stopped'
+  loop:
+    - 'satisfactory_backup.service'
+    - 'satisfactory_backup.timer'

@@ -1,74 +1,96 @@
 # Satisfactory
 Satisfactory dedicated server.
 
-## Requirements
-[supported platforms](https://github.com/r-pufky/ansible_satisfactory/blob/main/meta/main.yml)
+## [Requirements][i]
+Requires [r_pufky.game][g] galaxy-ng collection.
 
-Resource | Minimum | Recommended
----------|---------|-------------------
-CPU      | 4c/4t   | 4c/8t@3.8Ghz+
-RAM      | 12GB    | 16GB+ (4+ players)
-Disk     | 10GB    | 15GB
+  Resource | Minimum | Recommended
+ ----------|---------|-------------
+  CPU      | 4c/4t   | 4c/8t @3.8Ghz+ (Intel i5-3570+ or Ryzen 5 3600+).
+  RAM      | 12GB    | 16GB+ (4+ players).
+  Disk     | 5GB     | 6GB.
 
 Heavily favors single core speed. Do not use **kvm64** VM processor types.
 
 ## Role Variables
-[defaults](https://github.com/r-pufky/ansible_satisfactory/tree/main/defaults/main)
+Detailed variable use documented in defaults. See usage for role operation.
 
-### Ports
-All ports and protocols have been defined for the role.
+* [defaults][j] - User configurable options.
 
-[defaults/ports.yml](https://github.com/r-pufky/ansible_satisfactory/blob/main/defaults/main/ports.yml)
+* [ports][k] - Ports are **not** managed (defined for external use).
 
-## Dependencies
-**galaxy-ng** roles cannot be used independently. Part of
-[r_pufky.game](https://github.com/r-pufky/ansible_collection_game) collection.
+## Usage
+A new server [must be claimed to be used][l]. Once claimed a game may be
+created on the server to host. These settings are stored in a
+[binary save (.sav)][m] file and not externally editable.
 
-## Example Playbook
-Read defaults documentation.
+### Claim a server
+Client Game ➔ Server Manager ➔ Add server
+* Set server name.
+* Set admin password.
+* Create or load a game to host.
 
-The following example will get an instance quickly up and running. Server will
-be created using the steamcmd user from `r_pufky.game.steam`.
+### Feature Flags
+Tasks are gated by feature flags and executed in the following order.
+
+  Step | Flag                    | Notes
+ ------|-------------------------|-------
+  1    | satisfactory_flg_update | Update server on launch or if already installed.
+  2    | satisfactory_flg_config | Set configuration files.
+  3    | satisfactory_flg_backup | Enable local scheduled backup.
+
+### Example Playbooks
+Server will automatically populate any required .ini file on initial shutdown
+if it does not exist on service start. Any pre-existing .ini file will not be
+touched and assumed correct.
+
+After the first-run setup [the server must be claimed](#claim-a-server).
+
+#### Default Server
+
 ``` yaml
-- name: 'Satisfactory server'
-  hosts: '7days.example.com'
-  become: true
-  roles:
-     - 'r_pufky.game.satisfactory'
+- name: 'Configure a default satisfactory server with backups.'
+  ansible.builtin.include_role:
+     name: 'r_pufky.game.satisfactory'
   vars:
-    satisfactory_srv_backup_enable: true
+    satisfactory_flg_backup: true
 ```
 
-Changes updating the configuration only can be done to speed role application:
-``` bash
-ansible-playbook site.yml --tags 7days \
-  -e '{"satisfactory_srv_update_server": false}'
+#### Custom Server
+[Configuration files][o] will be interpreted as templates, allowing for vault
+use of server configuration files. Files in this directory will be sync'ed to
+the server. See [examples in files][n].
+
+``` yaml
+- name: 'Satisfactory with .'
+  ansible.builtin.include_role:
+     name: 'r_pufky.game.satisfactory'
+  vars:
+    satisfactory_flg_backup: true
+    satisfactory_flg_config: true
+    satisfactory_cfg_dir: 'host_vars/sat.example.com/config'
 ```
 
 ## Development
-Configure [environment](https://r-pufky.github.io/ansible_collection_docs/ansible/environment)
+Configure [environment][a].
 
-Run all unit tests:
 ``` bash
+# Run all tests.
 molecule test --all
 ```
 
-### Releases
-Release format: **{OS}-{SERVICE}-{ROLE}**
+Testing variables:
 
-Each type inherits the versioning system used; defaulting to schematic
-versioning.
+  Variable          | type | Description
+ -------------------|------|-------------
+  url_inject_enable | bool | Disable **get_url** to inject files locally.
 
-`12.0.0-2.0.3-1.0.0`
+### [Releases][b]
 
-* 12.0.0 - Debian 12 (bookworm).
-* 2.0.3 - Service/app version.
-* 1.0.0 - Role version.
-
-Releases are branched on Debian releases:
-
-* **[13.x.x](https://github.com/r-pufky/ansible_satisfactory)**: 13 Trixie.
-* **[12.x.x](https://github.com/r-pufky/ansible_satisfactory/tree/12.x)**: 12 Bookworm.
+  Release | Debian | Ansible | Notes
+ ---------|--------|---------|-------
+  2.x.x   | 13     | 2.20    | Ansible 2.20, feature flags, and semantic versioning.
+  1.x.x   | 12     | 2.11    | Migration from private repository.
 
 ## Issues
 Create a bug and provide as much information as possible.
@@ -76,9 +98,24 @@ Create a bug and provide as much information as possible.
 Associate pull requests with a submitted bug.
 
 ## License
-[AGPL-3.0 License](https://www.tldrlegal.com/license/gnu-affero-general-public-license-v3-agpl-3-0)
- [(direct link)](https://github.com/r-pufky/ansible_satisfactory/blob/main/LICENSE)
+[AGPL-3.0 License][c] | [direct link][f]
 
 ## Author Information
-PGP Fingerprint: [466EEC2B67516C7117C85CE3A0BC35D16698BAB9](https://keys.openpgp.org/vks/v1/by-fingerprint/466EEC2B67516C7117C85CE3A0BC35D16698BAB9)
-| [github gist](https://gist.github.com/r-pufky/a8df36977c55b5bb20829267c4c49d22)
+PGP: [466EEC2B67516C7117C85CE3A0BC35D16698BAB9][d] | [github gist][e]
+
+
+[a]: https://r-pufky.github.io/ansible_docs
+[b]: https://semver.org/spec/v2.0.0
+[c]: https://www.tldrlegal.com/license/gnu-affero-general-public-license-v3-agpl-3-0
+[d]: https://keys.openpgp.org/vks/v1/by-fingerprint/466EEC2B67516C7117C85CE3A0BC35D16698BAB9
+[e]: https://gist.github.com/r-pufky/a8df36977c55b5bb20829267c4c49d22
+
+[f]: https://github.com/r-pufky/ansible_satisfactory/blob/main/LICENSE
+[g]: https://github.com/r-pufky/ansible_collection_game
+[i]: https://github.com/r-pufky/ansible_satisfactory/blob/main/meta/main.yml
+[j]: https://github.com/r-pufky/ansible_satisfactory/tree/main/defaults/main/main.yml
+[k]: https://github.com/r-pufky/ansible_satisfactory/blob/main/defaults/main/ports.yml
+[l]: https://satisfactory.wiki.gg/wiki/Dedicated_servers#Claiming_the_Server_and_Starting_a_Game
+[m]: https://satisfactory.wiki.gg/wiki/Save_files
+[n]: https://github.com/r-pufky/ansible_satisfactory/tree/main/files
+[o]: https://satisfactory.wiki.gg/wiki/Dedicated_servers/Configuration_files

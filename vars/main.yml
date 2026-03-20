@@ -1,0 +1,40 @@
+---
+###############################################################################
+# Satisfactory Role Options
+###############################################################################
+#
+# Updates:
+# * Version is determined by build version on release page (see all updates).
+# * KEEP a separate change log as changes are made.
+# * Use bare-metal docs to validate package/process changes.
+# * Update defaults.
+# * Update tests for any changes.
+# * Standard validation testing (yamllint, ansible-lint, to-do, no-qa).
+#
+# Reference:
+# * https://store.steampowered.com/app/526870/Satisfactory
+# * https://satisfactory.wiki.gg/wiki/Dedicated_servers
+
+satisfactory___release: "{{ {} | r_pufky.data.v3(
+
+    _date='2026-03-20',
+    _debian='trixie',
+    _app='v1.1.2.2',
+    _app_id=1690800,
+    _platform='linux',
+  ) }}"
+
+satisfactory___app: "{{ {} | r_pufky.data.v3(
+
+    _root_dir='/home/steam/satisfactory',
+    _app='/home/steam/satisfactory/FactoryServer.sh',
+    _ini_dir='/home/steam/satisfactory/FactoryGame/Saved/Config/LinuxServer',
+    _save_dir='/home/steam/.config/Epic/FactoryGame/Saved/SaveGames',
+    _manifest_file='/home/steam/satisfactory/steamapps/appmanifest_1690800.acf',
+    _steamcmd=(
+      '/usr/games/steamcmd ' ~
+      '+@sSteamCmdForcePlatformType ' ~ satisfactory___release._platform ~
+      ' +force_install_dir /home/steam/satisfactory ' ~
+      '+login anonymous '
+    ),
+  ) }}"

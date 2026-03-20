@@ -1,0 +1,15 @@
+[Unit]
+Description=Satisfactory backup.
+Requires=satisfactory_backup.timer
+After=network.target
+Wants=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c '/usr/bin/tar -cvJf "{{ satisfactory__cfg._backup_dir }}/$(date --iso-8601).tar.xz" "{{ satisfactory__cfg._save_dir }}"'
+WorkingDirectory={{ satisfactory__cfg._root_dir }}
+User={{ steam__ctx._user }}
+Group={{ steam__ctx._group }}
+
+[Install]
+WantedBy=multi-user.target

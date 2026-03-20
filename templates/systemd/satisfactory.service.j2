@@ -1,0 +1,22 @@
+[Unit]
+Description=Satisfactory Dedicated Server.
+After=syslog.target network.target nss-lookup.target network-online.target
+Wants=network.target
+
+[Service]
+Type=simple
+RestartSec=60s
+{% if satisfactory_flg_update %}
+ExecStartPre={{ satisfactory__cfg._steamcmd }} +app_update {{ satisfactory__srv._app_id }} -beta {{ satisfactory__srv._branch }} {{ satisfactory__srv._update_opts }} +quit
+{% endif %}
+ExecStart={{ satisfactory__cfg._app }} {{ satisfactory__srv._launch_opts }}
+WorkingDirectory={{ satisfactory__cfg._root_dir }}
+Environment="LD_LIBRARY_PATH={{ satisfactory__cfg._root_dir }}/linux64"
+KillSignal=SIGINT
+Restart=always
+User={{ steam__ctx._user }}
+Group={{ steam__ctx._group }}
+
+[Install]
+WantedBy=multi-user.target
+

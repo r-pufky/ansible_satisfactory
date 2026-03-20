@@ -3,63 +3,28 @@
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Verify | /home/steam/satisfactory'
-      ansible.builtin.include_role:
-        name: 'r_pufky.lib.tests'
-        tasks_from: 'file.yml'
-      vars:
-        test_name: 'Verify | /home/steam/satisfactory'
-        test_file: '/home/steam/satisfactory'
-        test_owner: 'steam'
-        test_group: 'steam'
-        test_mode: '0755'
-        test_state: 'directory'
-        test_diff: true
-
-    - name: 'Verify | Engine.ini'
-      ansible.builtin.include_role:
-        name: 'r_pufky.lib.tests'
-        tasks_from: 'copy.yml'
-      vars:
-        test_name: 'Verify | Engine.ini'
-        test_src: 'files/Engine.ini'
-        test_file: '{{
-            "/home/steam/satisfactory/FactoryGame/Saved/Config/LinuxServer/" ~
-            "Engine.ini"
+- name: 'Verify'
+  hosts: 'all'
+  gather_facts: false
+  tasks:
+    - name: 'Prepare | import role variables'
+      ansible.builtin.include_vars:
+        file: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~ "/vars/main.yml"
           }}'
-        test_owner: 'steam'
-        test_group: 'steam'
-        test_mode: '0664'
-        test_diff: true
 
-    - name: 'Verify | Game.ini'
-      ansible.builtin.include_role:
-        name: 'r_pufky.lib.tests'
-        tasks_from: 'copy.yml'
-      vars:
-        test_name: 'Verify | Game.ini'
-        test_src: 'files/Game.ini'
-        test_file: '{{
-            "/home/steam/satisfactory/FactoryGame/Saved/Config/LinuxServer/" ~
-            "Game.ini"
-          }}'
-        test_owner: 'steam'
-        test_group: 'steam'
-        test_mode: '0664'
-        test_diff: true
-
-    - name: 'Verify | GameUserSettings.ini'
-      ansible.builtin.include_role:
-        name: 'r_pufky.lib.tests'
-        tasks_from: 'copy.yml'
-      vars:
-        test_name: 'Verify | GameUserSettings.ini'
-        test_src: 'files/GameUserSettings.ini'
-        test_file: '{{
-            "/home/steam/satisfactory/FactoryGame/Saved/Config/LinuxServer/" ~
-            "GameUserSettings.ini"
-          }}'
-        test_owner: 'steam'
-        test_group: 'steam'
-        test_mode: '0664'
-        test_diff: true
+    # Just spot check a value in the list of files. Server automatically adds
+    # and re-writes configuration on new builds and config values. All files
+    # are deployed at the same time.
+    - name: '{{
+          "Verify | test | " ~ satisfactory___app._ini_dir ~ "/Game.ini"
+        }}'
+      ansible.builtin.lineinfile:
+        name: '{{ satisfactory___app._ini_dir ~ "/Game.ini" }}'
+        line: 'MaxPlayers=4'
+        state: 'present'
+      check_mode: true
+      register: satisfactory__test
+      failed_when: >
+        satisfactory__test is changed or
+        satisfactory__test is failed

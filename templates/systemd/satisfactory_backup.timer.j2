@@ -1,0 +1,9 @@
+[Unit]
+Description=Satisfactory backup timer.
+Requires=satisfactory_backup.service
+
+[Timer]
+OnBootSec={{ satisfactory__cfg._backup_schedule | default("1d") }}
+
+[Install]
+WantedBy=timers.target

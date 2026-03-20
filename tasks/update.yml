@@ -1,0 +1,33 @@
+---
+###############################################################################
+# Install
+###############################################################################
+# Install location is relative to base installation directory. This is **NOT**
+# customizable, contrary to many mis-documented Internet configurations.
+#
+# Reference:
+# * https://satisfactory.wiki.gg/wiki/Dedicated_servers
+
+- name: 'Update | steamcmd | 🗘 updating server (4.5GB, ~3 minutes) 🗘'
+  ansible.builtin.debug:
+    msg: |
+
+      🗘 Updating ~4.5GB (~3 minutes @ 200Mbps). 🗘
+
+- name: '{{
+      "Install | steamcmd | update " ~
+      satisfactory__srv._app_id ~ "-" ~ satisfactory__srv._branch
+    }}'
+  ansible.builtin.shell: '{{
+      satisfactory__cfg._steamcmd ~
+      "+app_update " ~ satisfactory__srv._app_id ~
+      " -beta " ~ satisfactory__srv._branch ~
+      satisfactory__srv._update_opts ~
+      " +quit"
+    }}'
+  args:
+    executable: '/bin/bash'
+    chdir: '{{ steam__ctx._home }}'
+  changed_when: false
+  become: true
+  become_user: '{{ steam__ctx._user }}'

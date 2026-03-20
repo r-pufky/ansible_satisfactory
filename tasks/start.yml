@@ -1,0 +1,62 @@
+---
+###############################################################################
+# Validate
+###############################################################################
+# Ensure services and confirm they are active and running.
+
+- name: 'Start | meta | 🗘 flush timers 🗘'
+  ansible.builtin.meta: flush_handlers
+
+- name: 'Start | systemd | satisfactory.service'
+  ansible.builtin.systemd:
+    name: 'satisfactory.service'
+    state: 'started'
+    enabled: true
+    daemon_reload: true
+  delay: 15
+  retries: 3
+  register: satisfactory__service
+  until: satisfactory__service.status.ActiveState == 'active'
+
+- name: 'Start | fact | query services'
+  ansible.builtin.service_facts:
+
+- name: 'Start | assert | services running'
+  ansible.builtin.assert:
+    quiet: true
+    that: ansible_facts.services[item].state == 'running'
+    fail_msg: |
+
+      ✘ Service failed to start.
+      {{ item }}
+  loop:
+    - 'satisfactory.service'
+
+- name: 'Start | systemd | query satisfactory_backup.timer'
+  when: satisfactory_flg_backup
+  ansible.builtin.command: 'systemctl status satisfactory_backup.timer'
+  changed_when: false
+  register: satisfactory__cmd
+
+- name: 'Start | assert | satisfactory_backup.timer active'
+  when: satisfactory_flg_backup
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - satisfactory__cmd.rc == 0
+      - '"Active: active" in satisfactory__cmd.stdout'
+    fail_msg: |
+
+      ✘ satisfactory_backup.timer should be active.
+
+- name: 'Start | assert | satisfactory_backup.service enabled'
+  when: satisfactory_flg_backup
+  ansible.builtin.assert:
+    quiet: true
+    that: ansible_facts.services[item].status == 'enabled'
+    fail_msg: |
+
+      ✘ Service should be enabled.
+      {{ item }}
+  loop:
+    - 'satisfactory_backup.service'
