@@ -15,7 +15,7 @@
       🗘 Updating ~4.5GB (~3 minutes @ 200Mbps). 🗘
 
 - name: '{{
-      "Install | steamcmd | update " ~
+      "Update | steamcmd | update " ~
       satisfactory__srv._app_id ~ "-" ~ satisfactory__srv._branch
     }}'
   ansible.builtin.shell: '{{
