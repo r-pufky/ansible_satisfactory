@@ -8,6 +8,9 @@
 #
 # Only set configuration files if they are defined.
 #
+# Filetree returns a dict (instead of a list of dict) for one element. Use
+# flatten to convert the result to a list if needed.
+#
 # Reference:
 # * https://satisfactory.wiki.gg/wiki/Dedicated_servers/Configuration_files
 
@@ -18,9 +21,7 @@
     owner: '{{ steam__ctx._user }}'
     group: '{{ steam__ctx._group }}'
     mode: '0664'  # Game enforced.
-  loop: '{{
-      lookup("community.general.filetree", satisfactory__cfg._cfg_dir)
-    }}'
+  loop: '{{ query("community.general.filetree", satisfactory__cfg._cfg_dir) }}'
   loop_control:
     label: '{{ item.path }}'
   when: item.state == 'file'
