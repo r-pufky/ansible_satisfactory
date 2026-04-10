@@ -4,9 +4,6 @@
 ###############################################################################
 # Ensure services and confirm they are active and running.
 
-- name: 'Start | meta | 🗘 flush timers 🗘'
-  ansible.builtin.meta: flush_handlers
-
 - name: 'Start | systemd | satisfactory.service'
   ansible.builtin.systemd:
     name: 'satisfactory.service'
@@ -17,6 +14,10 @@
   retries: 3
   register: satisfactory__service
   until: satisfactory__service.status.ActiveState == 'active'
+
+# Satisfactory must be started before first backup timer triggers.
+- name: 'Start | meta | 🗘 flush timers 🗘'
+  ansible.builtin.meta: flush_handlers
 
 - name: 'Start | fact | query services'
   ansible.builtin.service_facts:

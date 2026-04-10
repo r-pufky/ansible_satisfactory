@@ -14,32 +14,50 @@
 # Reference:
 # * https://satisfactory.wiki.gg/wiki/Dedicated_servers/Configuration_files
 
-- name: 'Config | filetree | deploy managed files'
+- name: 'Config | filetree | set managed directories'
+  ansible.builtin.file:
+    path: '{{ satisfactory___app._ini_d ~ "/" ~ item.path }}'
+    owner: '{{ steam__ctx._user }}'
+    group: '{{ steam__ctx._group }}'
+    mode: '0775'  # Game enforced.
+    state: 'directory'
+  loop: '{{ query("community.general.filetree", satisfactory__cfg._cfg_d) }}'
+  loop_control:
+    label: '{{ item.path }}'
+  when: item.state == 'directory'
+
+- name: 'Config | filetree | set managed files'
   ansible.builtin.template:
     src: '{{ item.src }}'
-    dest: '{{ satisfactory__cfg._ini_dir ~ "/" ~ item.path }}'
+    dest: '{{ satisfactory___app._ini_d ~ "/" ~ item.path }}'
     owner: '{{ steam__ctx._user }}'
     group: '{{ steam__ctx._group }}'
     mode: '0664'  # Game enforced.
-  loop: '{{ query("community.general.filetree", satisfactory__cfg._cfg_dir) }}'
+  loop: '{{ query("community.general.filetree", satisfactory__cfg._cfg_d) }}'
   loop_control:
     label: '{{ item.path }}'
   when: item.state == 'file'
-  register: satisfactory__local
 
 - name: 'Config | filesystem | query remote files'
   ansible.builtin.find:
-    paths: '{{ satisfactory__cfg._ini_dir }}'
-    file_type: 'file'
+    paths: '{{ satisfactory___app._ini_d }}'
+    file_type: 'any'
+    hidden: true
     recurse: true
   register: satisfactory__remote
 
-- name: 'Config | filesystem | remove unmanaged files'
+- name: 'Config | filetree | remove unmanaged files and directories'
   ansible.builtin.file:
     path: '{{ item.path }}'
     state: 'absent'
-  loop: '{{ satisfactory__remote.files }}'
+  loop:
+    '{{ satisfactory__remote.files | sort(attribute="path", reverse=true) }}'
   loop_control:
     label: '{{ item.path }}'
   when: >
-    item.path not in satisfactory__local.results | map(attribute='dest') | list
+    item.path not in
+    (
+      query("community.general.filetree", satisfactory__cfg._cfg_d) |
+      map(attribute='path') |
+      map('regex_replace', '^', satisfactory___app._ini_d ~ "/") | list
+    )

@@ -16,11 +16,11 @@
 
 - name: '{{
       "Update | steamcmd | update " ~
-      satisfactory__srv._app_id ~ "-" ~ satisfactory__srv._branch
+      satisfactory___release._app_id ~ "-" ~ satisfactory__srv._branch
     }}'
   ansible.builtin.shell: '{{
-      satisfactory__cfg._steamcmd ~
-      "+app_update " ~ satisfactory__srv._app_id ~
+      satisfactory___app._steamcmd ~
+      "+app_update " ~ satisfactory___release._app_id ~
       " -beta " ~ satisfactory__srv._branch ~
       satisfactory__srv._update_opts ~
       " +quit"

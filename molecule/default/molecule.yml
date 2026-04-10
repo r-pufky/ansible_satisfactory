@@ -26,11 +26,11 @@ provisioner:
   inventory:
     group_vars:
       all:
-        url_inject_enable: true
+        molecule_flg_inject: true
         satisfactory_flg_backup: true
         satisfactory_flg_config: true
-        satisfactory_cfg_dir: '{{
-            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~ "/files/4_player"
+        satisfactory_cfg_d: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~ "/templates/4_player"
           }}'
 platforms:
   - name: 'satisfactory-default'

@@ -19,14 +19,14 @@
 
 - name: 'Install | filesystem | find current installation'
   ansible.builtin.stat:
-    path: '{{ satisfactory__cfg._app }}'
+    path: '{{ satisfactory___app._bin }}'
   register: satisfactory__installed
 
 - name: 'Install | filesystem | query installed branch'
   when: satisfactory__installed.stat.exists
   ansible.builtin.find:
-    paths: '{{ satisfactory__cfg._manifest_file | dirname }}'
-    patterns: '{{ satisfactory__cfg._manifest_file | basename }}'
+    paths: '{{ satisfactory___app._manifest | dirname }}'
+    patterns: '{{ satisfactory___app._manifest | basename }}'
     file_type: 'file'
     read_whole_file: true
     contains: '(?m:UserConfig"\s*{\s*"BetaKey"\s*"public)'
@@ -45,31 +45,43 @@
             if satisfactory__installed_branch.matched | default(1) > 0 else
             'experimental'
         ),
-        _save_dir=(
+        _save_d=(
           steam__ctx._home ~ '/.config/Epic/FactoryGame/Saved/SaveGames'
         ),
       ) }}"
 
-- name: '{{ "Install | filesystem | " ~ satisfactory__cfg._root_dir }}'
+- name: '{{ "Install | filesystem | " ~ satisfactory___app._root_d }}'
   ansible.builtin.file:
-    path: '{{ satisfactory__cfg._root_dir }}'
+    path: '{{ satisfactory___app._root_d }}'
     owner: '{{ steam__ctx._uid }}'
     group: '{{ steam__ctx._gid }}'
     mode: '0755'
     state: 'directory'
 
-- name: '{{ "Install | filesystem | " ~ satisfactory__cfg._backup_dir }}'
+- name: '{{ "Install | filesystem | " ~ satisfactory__cfg._backup_d }}'
   when: satisfactory_flg_backup
-  ansible.builtin.file:
-    path: '{{ satisfactory__cfg._backup_dir }}'
-    owner: '{{ steam__ctx._uid }}'
-    group: '{{ steam__ctx._gid }}'
-    mode: '0755'
-    state: 'directory'
+  block:
+    - name: '{{ "Install | filesystem | " ~ satisfactory__cfg._backup_d }}'
+      ansible.builtin.file:
+        path: '{{ satisfactory__cfg._backup_d }}'
+        owner: '{{ steam__ctx._uid }}'
+        group: '{{ steam__ctx._gid }}'
+        mode: '0755'
+        state: 'directory'
+  rescue:
+    - name: '{{ "Install ⛑ | filesystem | " ~ satisfactory__cfg._backup_d }}'
+      ansible.builtin.file:
+        path: '{{ satisfactory__cfg._backup_d }}'
+        owner: '{{ steam__ctx._uid }}'
+        group: '{{ steam__ctx._gid }}'
+        mode: '0700'
+        state: 'directory'
+      become: true
+      become_user: '{{ steam__ctx._user }}'
 
-- name: '{{ "Install | filesystem | " ~ satisfactory__cfg._ini_dir }}'
+- name: '{{ "Install | filesystem | " ~ satisfactory___app._ini_d }}'
   ansible.builtin.file:
-    path: '{{ satisfactory__cfg._ini_dir }}'
+    path: '{{ satisfactory___app._ini_d }}'
     owner: '{{ steam__ctx._uid }}'
     group: '{{ steam__ctx._gid }}'
     mode: '0775'  # Game enforced.

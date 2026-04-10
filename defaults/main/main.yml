@@ -70,22 +70,22 @@ satisfactory_srv_branch: 'public'
 # on first run server startup and shutdown.
 #
 # Role contains two example configurations:
-# * files/default - Vanilla auto-generated server settings.
-# * files/4_player - Minimal changes for a 4 player server.
+# * templates/default - Vanilla auto-generated server settings.
+# * templates/4_player - Minimal changes for a 4 player server.
 #
-# satisfactory_cfg_dir: 'host_vars/sat.example.com/data/config'
+# satisfactory_cfg_d: 'host_vars/sat.example.com/data/config'
 #
 # Default: '' (use auto-generated defaults on startup).
 #
 # Reference:
 # * https://satisfactory.wiki.gg/wiki/Dedicated_servers/Configuration_files
-satisfactory_cfg_dir: ''
+satisfactory_cfg_d: ''
 
 # Backup
 ###############################################################################
 
 # Root backup location. Default: '/srv/backup/satisfactory'.
-satisfactory_cfg_backup_dir: '/srv/backup/satisfactory'
+satisfactory_cfg_backup_d: '/srv/backup/satisfactory'
 
 # Backup schedule (systemd TIME format).
 #

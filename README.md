@@ -12,6 +12,10 @@ Requires [r_pufky.game][g] galaxy-ng collection.
 
 Heavily favors single core speed. Do not use **kvm64** VM processor types.
 
+> Tasks [potentially touching Network Mounted Filesystems][p] will be run as
+> the task user and fallback to the service user. Manage these locations
+> externally if these fail.
+
 ## Role Variables
 Detailed variable use documented in defaults. See usage for role operation.
 
@@ -68,7 +72,7 @@ the server. See [examples in files][n].
   vars:
     satisfactory_flg_backup: true
     satisfactory_flg_config: true
-    satisfactory_cfg_dir: 'host_vars/sat.example.com/config'
+    satisfactory_cfg_d: 'host_vars/sat.example.com/config'
 ```
 
 ## Development
@@ -81,9 +85,9 @@ molecule test --all
 
 Testing variables:
 
-  Variable          | type | Description
- -------------------|------|-------------
-  url_inject_enable | bool | Disable **get_url** to inject files locally.
+  Variable            | Type | Description
+ ---------------------|------|-------------
+  molecule_flg_inject | bool | Disable **get_url** to inject files locally.
 
 ### [Releases][b]
 
@@ -119,3 +123,4 @@ PGP: [466EEC2B67516C7117C85CE3A0BC35D16698BAB9][d] | [github gist][e]
 [m]: https://satisfactory.wiki.gg/wiki/Save_files
 [n]: https://github.com/r-pufky/ansible_satisfactory/tree/main/files
 [o]: https://satisfactory.wiki.gg/wiki/Dedicated_servers/Configuration_files
+[p]: https://r-pufky.github.io/ansible_docs/best_practice/patterns/#network-mounts

@@ -26,11 +26,11 @@ satisfactory___release: "{{ {} | r_pufky.data.v3(
 
 satisfactory___app: "{{ {} | r_pufky.data.v3(
 
-    _root_dir='/home/steam/satisfactory',
-    _app='/home/steam/satisfactory/FactoryServer.sh',
-    _ini_dir='/home/steam/satisfactory/FactoryGame/Saved/Config/LinuxServer',
-    _save_dir='/home/steam/.config/Epic/FactoryGame/Saved/SaveGames',
-    _manifest_file='/home/steam/satisfactory/steamapps/appmanifest_1690800.acf',
+    _root_d='/home/steam/satisfactory',
+    _bin='/home/steam/satisfactory/FactoryServer.sh',
+    _ini_d='/home/steam/satisfactory/FactoryGame/Saved/Config/LinuxServer',
+    _save_d='/home/steam/.config/Epic/FactoryGame/Saved/SaveGames',
+    _manifest='/home/steam/satisfactory/steamapps/appmanifest_1690800.acf',
     _steamcmd=(
       '/usr/games/steamcmd ' ~
       '+@sSteamCmdForcePlatformType ' ~ satisfactory___release._platform ~

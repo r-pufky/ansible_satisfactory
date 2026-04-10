@@ -17,10 +17,10 @@
     # and re-writes configuration on new builds and config values. All files
     # are deployed at the same time.
     - name: '{{
-          "Verify | test | " ~ satisfactory___app._ini_dir ~ "/Game.ini"
+          "Verify | test | " ~ satisfactory___app._ini_d ~ "/Game.ini"
         }}'
       ansible.builtin.lineinfile:
-        name: '{{ satisfactory___app._ini_dir ~ "/Game.ini" }}'
+        name: '{{ satisfactory___app._ini_d ~ "/Game.ini" }}'
         line: 'MaxPlayers=4'
         state: 'present'
       check_mode: true
