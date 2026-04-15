@@ -62,8 +62,8 @@ satisfactory_srv_branch: 'public'
 
 # Satisfactory server configuration to set.
 #
-# Ansible controller path to source configuration files (treated as a jinja2
-# template allowing for ansible variable interpretation). Overwrites existing
+# Ansible controller path to source directory (treated as a jinja2 templates
+# allowing for ansible variable use). Overwrites existing
 # /home/steam/satisfactory/FactoryGame/Saved/Config/LinuxServer/* files.
 #
 # Files not specified will be removed and automatically regenerated to defaults
