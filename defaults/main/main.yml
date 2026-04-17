@@ -3,7 +3,35 @@
 # Satisfactory
 ###############################################################################
 
-# 1. Force Satisfactory server updates if already installed?
+# 1. Is this role applied to a container?
+#
+# Decision: manual user setting - There is currently no good way to
+#     deterministically and consistently detect if a remote host is a
+#     container outside of common cases.
+#
+# Special Case:
+#   * deb_flg_container=true forces satisfactory_flg_container=true.
+#
+# Default: False.
+satisfactory_flg_container: false
+
+# 2. Force Static IP for client-download.steampowered.com?
+#
+# client-download.steampowered.com is used for internet connectivity checks and
+# to download data. CDN DNS updates may break this for up to 72 hours. steamcmd
+# will fail with 'Please confirm your network connection and try again.'.
+#
+# Enabling resolves media.steampowered.com and statically sets /etc/hosts which
+# fix this specific issue. Requires satisfactory_flg_container=false.
+#
+# This should ONLY be used as a one-off and not set by default as changing IP's
+# will result in steamcmd breaking again in the future.
+#
+# Reference:
+# * https://r-pufky.github.io/docs/game/steam/troubleshooting
+satisfactory_flg_cdn: false
+
+# 3. Force Satisfactory server updates if already installed?
 #
 # Server will be updated during role application and as a pre-start task for
 # service start. Disable to prevent updates after initial installation.
@@ -11,10 +39,10 @@
 # Default: False.
 satisfactory_flg_update: false
 
-# 2. Set configuration files? Default: False.
+# 4. Set configuration files? Default: False.
 satisfactory_flg_config: false
 
-# 3. Enable scheduled server backup?
+# 5. Enable scheduled server backup?
 #
 # Satisfactory does not automatically create saves unless manually enabled. See
 # satisfactory_cfg_backup_*.

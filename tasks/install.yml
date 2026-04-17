@@ -16,6 +16,8 @@
     name: 'r_pufky.game.steam'
   vars:
     steam_flg_update: false
+    steam_flg_container: '{{ satisfactory_flg_container }}'
+    steam_flg_cdn: '{{ satisfactory_flg_cdn }}'
 
 - name: 'Install | filesystem | find current installation'
   ansible.builtin.stat:

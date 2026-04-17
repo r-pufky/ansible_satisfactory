@@ -16,6 +16,10 @@ Heavily favors single core speed. Do not use **kvm64** VM processor types.
 > the task user and fallback to the service user. Manage these locations
 > externally if these fail.
 
+> VM's are highly recommended to provide strong isolation. Many servers require
+> low-level access to networking and hardware. Containers may be enabled but
+> are not supported for issues.
+
 ## Role Variables
 Detailed variable use documented in defaults. See usage for role operation.
 
@@ -37,11 +41,13 @@ Client Game ➔ Server Manager ➔ Add server
 ### Feature Flags
 Tasks are gated by feature flags and executed in the following order.
 
-  Step | Flag                    | Notes
- ------|-------------------------|-------
-  1    | satisfactory_flg_update | Update server on launch or if already installed.
-  2    | satisfactory_flg_config | Set configuration files.
-  3    | satisfactory_flg_backup | Enable local scheduled backup.
+  Step | Flag                       | Notes
+ ------|----------------------------|-------
+  1    | satisfactory_flg_container | Deploy container specific settings.
+  2    | satisfactory_flg_cdn       | Statically set Steam CDN IP.
+  3    | satisfactory_flg_update    | Update server on launch or if already installed.
+  4    | satisfactory_flg_config    | Set configuration files.
+  5    | satisfactory_flg_backup    | Enable local scheduled backup.
 
 ### Example Playbooks
 Server will automatically populate any required .ini file on initial shutdown

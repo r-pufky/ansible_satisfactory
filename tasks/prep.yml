@@ -5,6 +5,12 @@
 # Only use data annotations in role after merging role, defaults, runtime data.
 # Service may not exist if first install.
 
+- name:
+    'Prep | fact | force satisfactory_flg_container=true (deb_flg_container)'
+  when: deb_flg_container | default(false)
+  ansible.builtin.set_fact:
+    satisfactory_flg_container: true
+
 - name: 'Prep | fact | record start time'
   ansible.builtin.set_fact:
     satisfactory__srv: "{{ satisfactory___release | r_pufky.data.v3(
