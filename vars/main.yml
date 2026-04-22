@@ -31,6 +31,7 @@ satisfactory___app: "{{ {} | r_pufky.data.v3(
     _ini_d='/home/steam/satisfactory/FactoryGame/Saved/Config/LinuxServer',
     _save_d='/home/steam/.config/Epic/FactoryGame/Saved/SaveGames',
     _manifest='/home/steam/satisfactory/steamapps/appmanifest_1690800.acf',
+    _update_server='/home/steam/satisfactory/update_server',
     _steamcmd=(
       '/usr/games/steamcmd ' ~
       '+@sSteamCmdForcePlatformType ' ~ satisfactory___release._platform ~

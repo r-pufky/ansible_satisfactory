@@ -89,6 +89,14 @@
     mode: '0775'  # Game enforced.
     state: 'directory'
 
+- name: '{{ "Install | filesystem | " ~ satisfactory___app._update_server }}'
+  ansible.builtin.template:
+    src: 'templates/update_server.j2'
+    dest: '{{ satisfactory___app._update_server }}'
+    owner: '{{ steam__ctx._uid }}'
+    group: '{{ steam__ctx._gid }}'
+    mode: '0755'
+
 - name: 'Install | systemd | set satisfactory.service'
   ansible.builtin.template:
     src: 'systemd/satisfactory.service.j2'

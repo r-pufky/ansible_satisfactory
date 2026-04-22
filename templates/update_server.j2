@@ -1,0 +1,5 @@
+#!/bin/bash
+#
+# Update deployed steam server and validate install.
+
+{{ satisfactory___app._steamcmd }} +app_update {{ satisfactory___release._app_id }} -beta {{ satisfactory__srv._branch }} {{ satisfactory__srv._update_opts }} +quit
